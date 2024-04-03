@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createMood, updateMood, deleteMood } from "../api";
 import { Box, Heading, Text, Button, Input, Select, Stack, IconButton, Flex, Spacer } from "@chakra-ui/react";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 
@@ -12,34 +13,43 @@ const Index = () => {
   const [emoji, setEmoji] = useState("");
   const [editMoodId, setEditMoodId] = useState(null);
 
-  const handleAddMood = () => {
+  const handleAddMood = async () => {
     if (description && activity && emoji) {
       const newMood = {
-        id: Date.now(),
         description,
         activity,
         emoji,
-        createdAt: new Date(),
       };
-      setMoods([...moods, newMood]);
-      setDescription("");
-      setActivity("");
-      setEmoji("");
+      try {
+        const createdMood = await createMood(newMood);
+        setMoods([...moods, createdMood]);
+        setDescription("");
+        setActivity("");
+        setEmoji("");
+      } catch (error) {
+        console.error("Failed to add mood:", error);
+      }
     }
   };
 
-  const handleUpdateMood = () => {
-    if (description && activity && emoji) {
-      const updatedMoods = moods.map((mood) => (mood.id === editMoodId ? { ...mood, description, activity, emoji } : mood));
-      setMoods(updatedMoods);
-      setDescription("");
-      setActivity("");
-      setEmoji("");
-      setEditMoodId(null);
+  const handleUpdateMood = async () => {
+    if (description && activity && emoji && editMoodId) {
+      try {
+        await updateMood(editMoodId, { description, activity, emoji });
+        const updatedMoods = moods.map((mood) => (mood.id === editMoodId ? { ...mood, description, activity, emoji } : mood));
+        setMoods(updatedMoods);
+        setDescription("");
+        setActivity("");
+        setEmoji("");
+        setEditMoodId(null);
+      } catch (error) {
+        console.error("Failed to update mood:", error);
+      }
     }
   };
 
-  const handleDeleteMood = (id) => {
+  const handleDeleteMood = async (id) => {
+    await deleteMood(id);
     const updatedMoods = moods.filter((mood) => mood.id !== id);
     setMoods(updatedMoods);
   };
