@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { createMood, updateMood, deleteMood } from "../api";
+import React, { useState, useEffect } from "react";
+import { fetchMoods, createMood, updateMood, deleteMood } from "../api";
 import { Box, Heading, Text, Button, Input, Select, Stack, IconButton, Flex, Spacer } from "@chakra-ui/react";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 
@@ -8,6 +8,19 @@ const emojis = ["😊", "😐", "😢", "😡", "😴"];
 
 const Index = () => {
   const [moods, setMoods] = useState([]);
+
+  useEffect(() => {
+    const getMoods = async () => {
+      try {
+        const fetchedMoods = await fetchMoods();
+        setMoods(fetchedMoods);
+      } catch (error) {
+        console.error("Failed to fetch moods:", error);
+      }
+    };
+
+    getMoods();
+  }, []);
   const [description, setDescription] = useState("");
   const [activity, setActivity] = useState("");
   const [emoji, setEmoji] = useState("");
