@@ -34,9 +34,8 @@ const Index = () => {
         emoji,
       };
       try {
-        await createMood(newMood);
-        const fetchedMoods = await fetchMoods();
-        setMoods(fetchedMoods);
+        const createdMood = await createMood(newMood);
+        setMoods((currentMoods) => [...currentMoods, createdMood]);
         setDescription("");
         setActivity("");
         setEmoji("");
